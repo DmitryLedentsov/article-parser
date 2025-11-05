@@ -71,7 +71,7 @@ class ElibraryScraper:
             fieldnames = ['title', 'year', 'type', 'abstract', 'in_rinc', 'url']
             filtered_art = {k: article.get(k, '') for k in fieldnames}
             self.csv_writer.writerow(filtered_art)
-            self.csv_file.flush()  # Сразу записываем на диск
+            self.csv_file.flush()  # Сразу записываем на диск, потоковая запись, иначе переполнялась бы оператива
 
     def _close_csv(self):
         """Закрытие CSV файла"""
@@ -87,12 +87,13 @@ class ElibraryScraper:
         logger.info(f"Поиск по теме: {self.config['topic']}")
 
         self.session.cookies.clear()
+
+        #идем по страницами, берем список статей->переходим по ссылкам-> вытаскиваем инфу
         while articles_count < self.config['num_articles']:
-            search_url = self.config['base_url']+"/query_results.asp?where_fulltext=on&where_name=on&where_abstract=on&where_keywords=on&where_affiliation=&where_references=&type_article=on&type_disser=on&type_book=on&type_report=on&type_conf=on&type_patent=on&type_preprint=on&type_grant=on&type_dataset=on&search_freetext=&search_morph=on&search_fulltext=&search_open=&search_results=&titles_all=&authors_all=&rubrics_all=&queryboxid=&itemboxid=&begin_year=&end_year=&issues=all&orderby=rank&order=rev&changed=1"
+            search_url = self.config['base_url']+"/query_results.asp?where_fulltext=on&where_name=on&where_abstract=on&where_keywords=on&where_affiliation=&where_references=&type_article=on&type_disser=on&type_book=on&type_report=on&type_conf=on&type_patent=on&type_preprint=on&type_grant=on&type_dataset=on&search_freetext=&search_morph=on&search_fulltext=&search_open=&search_results=&titles_all=&authors_all=&rubrics_all=&queryboxid=&itemboxid=&begin_year=&end_year=&issues=all&orderby=rank&order=rev&changed=1"+f"&pagenum={page}"
   
             params = {
                 'ftext': self.config['topic'],
-                'pagenum': page
             }
 
             logger.info(f"Запрос к странице {page}: {search_url}")
@@ -114,6 +115,7 @@ class ElibraryScraper:
                 logger.info(f"Найдено {len(rows)} статей на странице {page}")
                 self._random_delay()
 
+    
                 for row in rows:
                     if articles_count >= self.config['num_articles']:
                         break
@@ -201,7 +203,7 @@ class ElibraryScraper:
                 if type_match:
                     details['type'] = self.clean_text(type_match.group(1))
 
-            # Ключевые слова - улучшенный поиск
+       
 
             # Аннотация
             abstract_div = soup.find('div', id='abstract1')
