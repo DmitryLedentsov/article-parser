@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # Конфигурация
 CONFIG = {
     'topic': 'multiplayer game engine architecture',
-    'num_articles': 200,
+    'num_articles': 100,
     'output_csv': 'elibrary_articles.csv',
     'delay_min': 40,
     'delay_max': 60,
@@ -98,13 +98,14 @@ class ElibraryScraper:
 
             logger.info(f"Запрос к странице {page}: {search_url}")
             try:
-                response = self.session.get(
+              
+                response = requests.get(
                     search_url,
                     params=params,
                     headers=self._get_headers(),
                     timeout=self.config['timeout']
                 )
-                response.raise_for_status()
+
                 soup = BeautifulSoup(response.text, 'html.parser')
 
                 rows = soup.find_all('tr', id=re.compile(r'^a\d+$'))
