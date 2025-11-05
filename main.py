@@ -24,7 +24,7 @@ CONFIG = {
     'filter_keywords': ['multiplayer', 'game engine', 'architecture', 'network'],
     'num_keywords_to_extract': 10,  # Количество ключевых слов для извлечения
     'output_csv': 'scholar_articles.csv',
-    'delay': 5  # Задержка между запросами в секундах
+    'delay': 10  # Задержка между запросами в секундах
 }
 
 class ScholarScraper:

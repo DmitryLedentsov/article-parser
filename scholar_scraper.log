@@ -1,0 +1,7 @@
+2025-11-05 04:27:22,960 - INFO - Use pytorch device_name: cpu
+2025-11-05 04:27:22,960 - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-11-05 04:27:26,332 - INFO - Запуск асинхронного скрапинга Google Scholar
+2025-11-05 04:27:26,334 - INFO - Поиск на странице: https://scholar.google.com/scholar?start=0&q=multiplayer+game+engine+architecture&hl=en&as_sdt=0,5
+2025-11-05 04:27:31,787 - INFO - Запрос: https://scholar.google.com/scholar?start=0&q=multiplayer+game+engine+architecture&hl=en&as_sdt=0,5
+2025-11-05 04:27:32,351 - INFO - Результаты не найдены — возможно, достигнут конец или блокировка
+2025-11-05 04:27:32,351 - WARNING - Нет данных для сохранения
