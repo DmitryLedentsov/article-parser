@@ -20,8 +20,8 @@ CONFIG = {
     'topic': 'multiplayer game engine architecture',
     'num_articles': 20,
     'output_csv': 'elibrary_articles.csv',
-    'delay_min': 1,
-    'delay_max': 3,
+    'delay_min': 5,
+    'delay_max': 12,
     'timeout': 30,
     'base_url': 'http://elibrary.ru'
 }
@@ -32,25 +32,12 @@ class ElibraryScraper:
         self.session = requests.Session()
         self.kw_model = None  # Убрали KeyBERT
         self.headers_pool = self._get_headers_pool()
+        self.session.cookies.clear()
 
     def _get_headers_pool(self):
         return [
-            {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
-                'Referer': 'https://www.google.com/',
-                'Accept-Language': 'ru-RU,ru;q=0.9,en;q=0.8',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            },
-            {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
-                'Referer': 'https://yandex.ru/',
-                'Accept-Language': 'ru,en;q=0.9',
-            },
-            {
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0',
-                'Referer': 'https://www.bing.com/',
-                'Accept-Language': 'ru-RU,ru;q=0.9',
-            }
+            {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36" ,'referer':'https://www.google.com/'}
+
         ]
 
     def _random_delay(self):
@@ -69,6 +56,7 @@ class ElibraryScraper:
 
         logger.info(f"Поиск по теме: {self.config['topic']}")
 
+        self.session.cookies.clear()  # СБРАСЫВАЕМ СЕССИЮ
         while len(articles) < self.config['num_articles']:
             search_url = self.config['base_url']+"/query_results.asp?where_fulltext=on&where_name=on&where_abstract=on&where_keywords=on&where_affiliation=&where_references=&type_article=on&type_disser=on&type_book=on&type_report=on&type_conf=on&type_patent=on&type_preprint=on&type_grant=on&type_dataset=on&search_freetext=&search_morph=on&search_fulltext=&search_open=&search_results=&titles_all=&authors_all=&rubrics_all=&queryboxid=&itemboxid=&begin_year=&end_year=&issues=all&orderby=rank&order=rev&changed=1"
             params = {
@@ -83,12 +71,13 @@ class ElibraryScraper:
                 response = self.session.get(
                     search_url,
                     params=params,
-                    headers=headers,
+                    headers=self._get_headers(),
                     timeout=self.config['timeout']
                 )
                 response.raise_for_status()
                 soup = BeautifulSoup(response.text, 'html.parser')
 
+                print(response.text)
                 rows = soup.find_all('tr', id=re.compile(r'^a\d+$'))
                 if not rows:
                     logger.warning("Статьи не найдены на этой странице. Остановка.")
