@@ -1,0 +1,13 @@
+[Unit]
+Description=article-parser
+After=multi-user.target
+
+[Service]
+User=root
+Group=root
+Type=simple
+Restart=on-failure
+ExecStart=/usr/bin/python3 -u /home/article-parser/elib.py
+WorkingDirectory=/home/article-parser
+[Install]
+WantedBy=multi-user.target

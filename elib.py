@@ -99,13 +99,13 @@ class ElibraryScraper:
             logger.info(f"Запрос к странице {page}: {search_url}")
             try:
               
-                response = requests.get(
+                response = self.session.get(
                     search_url,
                     params=params,
                     headers=self._get_headers(),
                     timeout=self.config['timeout']
                 )
-
+                response.raise_for_status()
                 soup = BeautifulSoup(response.text, 'html.parser')
 
                 rows = soup.find_all('tr', id=re.compile(r'^a\d+$'))
